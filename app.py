@@ -93,7 +93,6 @@ if submitted:
 
         st.markdown(f"**Nama :** `{nama}`")
         st.markdown(f"**Kelas :** `{kelas}`")
-        st.markdown(f"**Jumlah Ketidakhadiran :** `{absences}` hari")
         st.markdown(f"**Jenis Kelamin :** `{jenis_kelamin}`")
         st.markdown(f"**Prediksi Kelulusan :** **{result}**")
         st.markdown(f"**Probabilitas Lulus :** **{prob} %**\n")
@@ -103,8 +102,6 @@ if submitted:
             st.balloons()
         else:
             st.error(f"😔 Maaf {nama}, kamu diprediksi **Tidak Lulus**. Jangan putus asa, coba tingkatkan usaha dan konsultasi dengan guru.")
-
-        st.info("⚠️ *Catatan: Prediksi ini berdasarkan model statistik sederhana dan fitur terbatas. Gunakan sebagai referensi tambahan saja.*")
 
 # =======================
 # Catatan
