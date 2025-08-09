@@ -1,14 +1,50 @@
-# app.py - Versi Streamlit
+# app.py - Versi Streamlit dengan auto-train kalau file model tidak ada
 import streamlit as st
 import joblib
 import pandas as pd
+import os
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 # =======================
-# Load model & scaler
+# Cek & load atau buat model
 # =======================
-model = joblib.load("output_models/best_model.joblib")
-scaler = joblib.load("output_models/scaler.joblib")
-top20_features = joblib.load("output_models/top20_features.joblib")
+if not (os.path.exists("best_model.joblib") and os.path.exists("scaler.joblib") and os.path.exists("top20_features.joblib")):
+    st.warning("⚠️ File model tidak ditemukan. Melatih ulang model...")
+
+    # Load dataset
+    df = pd.read_csv("student_data.csv")
+    df["Pass"] = (df["G3"] >= 10).astype(int)
+
+    # Ambil fitur yang digunakan
+    X = df[["absences", "sex"]].copy()
+    X["sex_M"] = (X["sex"] == "M").astype(int)  # Encode gender M=1
+    X = X.drop(columns=["sex"])
+    top20_features = X.columns.tolist()
+    y = df["Pass"]
+
+    # Scaling
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    # Split
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42, stratify=y)
+
+    # Train model sederhana
+    model = LogisticRegression(max_iter=1000, random_state=42)
+    model.fit(X_train, y_train)
+
+    # Simpan model
+    joblib.dump(model, "best_model.joblib")
+    joblib.dump(scaler, "scaler.joblib")
+    joblib.dump(top20_features, "top20_features.joblib")
+
+else:
+    # Kalau file sudah ada, langsung load
+    model = joblib.load("best_model.joblib")
+    scaler = joblib.load("scaler.joblib")
+    top20_features = joblib.load("top20_features.joblib")
 
 # =======================
 # Judul aplikasi
@@ -54,7 +90,6 @@ if submitted:
     st.markdown(f"**Prediksi:** {result}")
     st.markdown(f"**Probabilitas Lulus:** {prob}%")
 
-    # Notifikasi visual
     if prediction == 1:
         st.success(f"Selamat {nama}, kamu diprediksi akan **Lulus** 🎉")
     else:
@@ -64,4 +99,4 @@ if submitted:
 # Catatan
 # =======================
 st.markdown("---")
-st.caption("Aplikasi ini dibuat untuk UAS MPML. Model dilatih menggunakan dataset student_data.csv dan menampilkan prediksi kelulusan berdasarkan variabel: Nama, Kelas, Nomor Absen, dan Jenis Kelamin.")
+st.caption("Aplikasi ini dibuat untuk UAS MPML.")
