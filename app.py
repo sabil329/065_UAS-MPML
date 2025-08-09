@@ -58,7 +58,7 @@ st.markdown("Masukkan data siswa untuk memprediksi kelulusan berdasarkan absensi
 # =======================
 with st.form("prediksi_form"):
     nama = st.text_input("Nama", placeholder="Masukkan nama lengkap")
-    kelas = st.text_input("Kelas", placeholder="Contoh: XI IPA 1")
+    kelas = st.text_input("Kelas", placeholder="Contoh: 11 IPA 1")
     absences = st.number_input("Nomor Absen", min_value=0, max_value=100, step=1)
     jenis_kelamin = st.selectbox("Jenis Kelamin", ["Laki-laki", "Perempuan"])
 
